@@ -9,3 +9,8 @@ dist/
 build/
 .DS_Store
 .ipynb_checkpoints/
+
+.vercel
+.venv/
+__pycache__/
+*.pyc
