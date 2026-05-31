@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgriInsure AI – Crop Insurance Claim Predictor</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green:   #1db954;
+    --dark:    #0a1628;
+    --card-bg: #111e35;
+    --border:  rgba(29,185,84,0.25);
+    --muted:   #8899aa;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  body {
+    background: var(--dark);
+    color: #e0eaf4;
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+  }
+  /* --- hero --- */
+  .hero {
+    background: linear-gradient(135deg, #071220 0%, #0d2b1f 60%, #072010 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 1rem 2.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: "";
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% -10%,
+                rgba(29,185,84,.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-icon { font-size: 3.2rem; line-height: 1; margin-bottom: .5rem; }
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: clamp(1.7rem, 4vw, 2.8rem);
+    color: #fff; letter-spacing: -1px; margin-bottom: .4rem;
+  }
+  .hero h1 span { color: var(--green); }
+  .hero p { color: var(--muted); font-size: .95rem; margin-bottom: 1rem; }
+  .badge-model {
+    display: inline-block; background: rgba(29,185,84,.15);
+    color: var(--green); border: 1px solid var(--border);
+    border-radius: 999px; padding: .25rem .85rem; font-size: .78rem; font-weight: 500;
+  }
+  /* --- card --- */
+  .form-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 1.25rem;
+    padding: 2rem;
+    box-shadow: 0 8px 40px rgba(0,0,0,.4);
+    max-width: 900px; margin: 2rem auto 3rem;
+  }
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: .75rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 2px;
+    color: var(--green); margin-bottom: 1rem;
+    padding-bottom: .5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  label { font-size: .83rem; color: var(--muted); margin-bottom: .25rem; }
+  .form-control, .form-select {
+    background: #0d1e33 !important; color: #e0eaf4 !important;
+    border: 1px solid rgba(255,255,255,.12) !important;
+    border-radius: .6rem !important; font-size: .9rem;
+    transition: border-color .2s;
+  }
+  .form-control:focus, .form-select:focus {
+    border-color: var(--green) !important;
+    box-shadow: 0 0 0 3px rgba(29,185,84,.15) !important;
+  }
+  .form-control option, .form-select option { background: #0d1e33; }
+  .btn-predict {
+    background: var(--green); color: #071220;
+    font-family: 'Syne', sans-serif; font-weight: 700;
+    font-size: 1rem; border: none; border-radius: .75rem;
+    padding: .85rem 2.5rem; width: 100%;
+    transition: opacity .2s, transform .15s;
+  }
+  .btn-predict:hover { opacity: .88; transform: translateY(-1px); }
+  .info-chip {
+    display: inline-flex; align-items: center; gap: .4rem;
+    background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08);
+    border-radius: .5rem; padding: .3rem .75rem;
+    font-size: .78rem; color: var(--muted);
+  }
+  .info-chip span { color: var(--green); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-icon">🌾</div>
+  <h1>AgriInsure <span>AI</span></h1>
+  <p>Predict crop insurance claim likelihood using machine learning</p>
+  <span class="badge-model">⚡ Powered by {{ model_name }}</span>
+</div>
+
+<!-- Stats row -->
+<div class="container" style="max-width:900px; margin-top:1.5rem;">
+  <div class="d-flex flex-wrap gap-2 justify-content-center">
+    <span class="info-chip">🎯 Accuracy <span>99.9%</span></span>
+    <span class="info-chip">🔁 Recall <span>100%</span></span>
+    <span class="info-chip">📊 ROC-AUC <span>1.000</span></span>
+    <span class="info-chip">🌿 Dataset <span>5 000 farms</span></span>
+  </div>
+</div>
+
+<!-- Form card -->
+<div class="form-card px-3">
+  <form method="POST" action="/predict">
+
+    <!-- Weather -->
+    <p class="section-title">🌧️ Weather & Environment</p>
+    <div class="row g-3 mb-4">
+      <div class="col-md-4">
+        <label>Rainfall Deviation (%)</label>
+        <input name="rain_dev" type="number" step="0.1" class="form-control"
+               placeholder="e.g. -25 (drought) / +35 (flood)" required>
+      </div>
+      <div class="col-md-4">
+        <label>Temperature (°C)</label>
+        <input name="temperature" type="number" step="0.1" class="form-control"
+               placeholder="e.g. 28" required>
+      </div>
+      <div class="col-md-4">
+        <label>Irrigation</label>
+        <select name="irrigation" class="form-select">
+          <option value="1">Irrigated</option>
+          <option value="0">Rain-fed</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Crop info -->
+    <p class="section-title">🌱 Crop Information</p>
+    <div class="row g-3 mb-4">
+      <div class="col-md-3">
+        <label>Crop Type</label>
+        <select name="crop" class="form-select">
+          {% for c in crops %}<option>{{ c }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label>Season</label>
+        <select name="season" class="form-select">
+          {% for s in seasons %}<option>{{ s }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label>Soil Type</label>
+        <select name="soil_type" class="form-select">
+          {% for s in soils %}<option>{{ s }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label>State</label>
+        <select name="state" class="form-select">
+          {% for s in states %}<option>{{ s }}</option>{% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <!-- Production -->
+    <p class="section-title">📦 Production Details</p>
+    <div class="row g-3 mb-4">
+      <div class="col-md-4">
+        <label>Area Cultivated (hectares)</label>
+        <input name="area" type="number" step="0.1" min="0.1" class="form-control"
+               placeholder="e.g. 5.0" required>
+      </div>
+      <div class="col-md-4">
+        <label>Total Production (tonnes)</label>
+        <input name="production" type="number" step="0.1" min="0" class="form-control"
+               placeholder="e.g. 12.5" required>
+      </div>
+      <div class="col-md-4">
+        <label>Fertiliser Applied (kg/ha)</label>
+        <input name="fertiliser" type="number" step="1" class="form-control"
+               placeholder="e.g. 150" required>
+      </div>
+    </div>
+
+    <button type="submit" class="btn-predict">🔍 Predict Claim Likelihood</button>
+  </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
